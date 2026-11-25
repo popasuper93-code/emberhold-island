@@ -1,0 +1,11 @@
+{
+  "appId": "com.emberhold.island",
+  "appName": "Emberhold",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "backgroundColor": "#0d0f14"
+  }
+}

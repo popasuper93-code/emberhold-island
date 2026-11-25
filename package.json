@@ -1,0 +1,14 @@
+{
+  "name": "emberhold-island",
+  "version": "0.2.0",
+  "description": "EMBERHOLD: Остров Пепла — mobile 3D survival",
+  "scripts": {
+    "start": "npx serve www",
+    "build": "echo 'Static project, no build step'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/cli": "^6.0.0"
+  }
+}
