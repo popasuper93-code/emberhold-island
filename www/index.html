@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>EMBERHOLD: Остров Пепла</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <div id="rotate-msg">
+    <div style="font-size:48px">📱</div>
+    <div style="font-size:18px;font-weight:700">Поверни телефон</div>
+    <div style="font-size:13px;color:#a89a8a">Только ландшафт</div>
+  </div>
+
+  <div id="app">
+    <canvas id="game-canvas"></canvas>
+
+    <div id="lobby-ui" class="visible">
+      <div class="top-bar">
+        <div class="profile-card">
+          <div class="avatar">⚔️</div>
+          <div>
+            <div class="profile-nick" id="profile-nick">AshWalker</div>
+            <div class="profile-rank">Ур. 1 · Новичок</div>
+          </div>
+        </div>
+        <div class="currency-bar">
+          <div class="currency-item">🪙 <span id="cur-coins">2500</span></div>
+        </div>
+        <div class="top-icons">
+          <div class="icon-btn" id="btn-settings">⚙️</div>
+        </div>
+      </div>
+      <div class="right-tiles">
+        <div class="tile-btn" onclick="document.getElementById('modal-roulette').classList.add('open')">Рулетка</div>
+        <div class="tile-btn" onclick="alert('Скины в разработке')">Скины</div>
+      </div>
+      <div class="continue-wrap">
+        <button class="btn-continue" id="btn-continue">ИГРАТЬ</button>
+        <div class="island-label">Остров #1 · Прототип всех этапов</div>
+      </div>
+      <div class="bottom-bar">
+        <div><span class="online-dot"></span> ONLINE</div>
+        <div>v0.2.0 full-prototype</div>
+      </div>
+    </div>
+
+    <div id="hud">
+      <div id="hud-stats">
+        <div>❤️ <span id="hud-hp">100</span></div>
+        <div>🍖 <span id="hud-cal">350</span></div>
+        <div>💧 <span id="hud-hyd">180</span></div>
+        <div style="opacity:0.5">FPS <span id="hud-fps">0</span></div>
+      </div>
+      <div id="hud-msg"></div>
+      <div id="hotbar">
+        <div class="hb-slot selected" id="hb-0"></div>
+        <div class="hb-slot" id="hb-1"></div>
+        <div class="hb-slot" id="hb-2"></div>
+        <div class="hb-slot" id="hb-3"></div>
+        <div class="hb-slot" id="hb-4"></div>
+        <div class="hb-slot" id="hb-5"></div>
+      </div>
+      <div id="joystick"><div id="joy-knob"></div></div>
+      <div id="look-area"></div>
+      <div id="btn-fire" class="mbtn">🔥</div>
+      <div id="btn-ads" class="mbtn">🎯</div>
+      <div id="btn-jump" class="mbtn">⬆</div>
+      <div id="btn-use" class="mbtn">E</div>
+      <div id="btn-inv" class="mbtn">🎒</div>
+      <div id="btn-build" class="mbtn">🧱</div>
+    </div>
+
+    <div id="inv-panel">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+        <b>Инвентарь / Крафт</b>
+        <button class="btn-small" onclick="document.getElementById('inv-panel').classList.remove('open')">✕</button>
+      </div>
+      <div id="craft-list">
+        <button data-craft="bandage" class="craft-btn">🩹 Бинт (4 ткани)</button>
+        <button data-craft="spear" class="craft-btn">🔱 Копьё (100д+50к)</button>
+        <button data-craft="bow" class="craft-btn">🏹 Лук (150д+20т)</button>
+        <button data-craft="revolver" class="craft-btn">🔫 Cobra (80 жел + 40 шлак) [I]</button>
+        <button data-craft="campfire" class="craft-btn">🔥 Костёр (50д)</button>
+        <button data-craft="bedroll" class="craft-btn">🛏️ Спальник (30т)</button>
+      </div>
+      <p style="font-size:11px;color:#a89a8a;margin-top:10px">Tab / 🎒 — закрыть · 1-6 хотбар · E использовать · B строить · ЛКМ бить/стрелять</p>
+    </div>
+
+    <div class="modal-overlay" id="modal-settings">
+      <div class="modal">
+        <div class="modal-header"><div class="modal-title">Настройки</div><button class="modal-close">×</button></div>
+        <p style="font-size:13px;line-height:1.5">Гироскоп: нажми «Включить» (нужно на iOS). Калибровка доступна после включения.<br><br>
+        Чувствительность и режимы гиро сохраняются.</p>
+        <button class="btn-small" id="btn-gyro-on" style="margin-top:12px">Включить гироскоп</button>
+        <button class="btn-small" onclick="Gyro.mode='ads'; alert('Режим: только ADS')" style="margin-top:8px">Режим ADS</button>
+        <button class="btn-small" onclick="Gyro.mode='always'; alert('Режим: всегда')" style="margin-top:8px">Режим Всегда</button>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-roulette">
+      <div class="modal">
+        <div class="modal-header"><div class="modal-title">Рулетка</div><button class="modal-close">×</button></div>
+        <p style="font-size:13px">Открывай кейсы за монеты. Скины сохраняются.</p>
+        <button class="btn-continue" style="margin-top:16px;min-width:160px;padding:10px 20px;font-size:14px" onclick="alert('Рулетка работает в полной версии Этапа 1. Здесь прототип.')">Открыть ящик (100🪙)</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="gyro.js"></script>
+  <script src="main.js"></script>
+  <script>
+    document.getElementById('btn-gyro-on')?.addEventListener('click', async () => {
+      const ok = await Gyro.requestPermission();
+      if (ok) { Gyro.start(); alert('Гироскоп включён'); }
+      else alert('Разрешение отклонено');
+    });
+  </script>
+</body>
+</html>
